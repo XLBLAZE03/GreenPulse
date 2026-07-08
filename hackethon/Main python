@@ -5,9 +5,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-# --- Step 2: Load Excel data ---
-# Replace 'data.xlsx' with the path to your Erxcel file
-df = pd.read_excel("C:\\lifepulse\\GreenPulse.xlsx")
+# --- Step 2: Load csv data ---
+# Replace 'data.csv' with the path to your csv file
+df = pd.read_csv("C:\\lifepulse\\GreenPulse.csv")
 
 print("Preview of data:")
 print(df.head())

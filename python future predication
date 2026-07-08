@@ -1,0 +1,77 @@
+# excel_ml_pipeline.py
+
+# --- Step 1: Import libraries ---
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+# --- Step 2: Load csv data ---
+# Replace with your actual file path
+df = pd.read_csv("C:\\lifepulse\\GreenPulse\\INEOS_Daily_CO2_Dataset_2010_2024.csv")
+
+print("Preview of data:")
+print(df.head())
+# --- Step 3: Preprocess data ---
+df = df.dropna()
+
+# Ensure Date column is parsed as datetime
+df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+
+# Filter only January 2025
+df_jan2025 = df[(df['Date'].dt.year == 2025) & (df['Date'].dt.month == 1)]
+
+print("\nData for January 2025:")
+print(df_jan2025.head())
+
+# Convert categorical columns to numeric
+df_jan2025 = pd.get_dummies(df_jan2025, drop_first=True)
+
+# --- Step 4: Calculate CO2 emissions ---
+# Assuming you have a column like 'Volume' and 'EmissionFactor'
+if 'Volume' in df_jan2025.columns and 'EmissionFactor' in df_jan2025.columns:
+    df_jan2025['CO2_Emissions'] = df_jan2025['Volume'] * df_jan2025['EmissionFactor']
+    total_emissions = df_jan2025['CO2_Emissions'].sum()
+    print(f"\nTotal CO₂ emissions for January 2025: {total_emissions:.2f} units")
+else:
+    print("\nNo emission calculation columns found. Please ensure 'Volume' and 'EmissionFactor' exist.")
+
+# --- Step 5: Visualization ---
+numeric_cols = df_jan2025.select_dtypes(include=["int64", "float64"]).columns
+if len(numeric_cols) >= 2:
+    x_col, y_col = numeric_cols[0], numeric_cols[1]
+    plt.figure(figsize=(8,6))
+    plt.scatter(df_jan2025[x_col], df_jan2025[y_col], color="blue", alpha=0.7)
+    plt.title(f"{y_col} vs {x_col} (Jan 2025)")
+    plt.xlabel(x_col)
+    plt.ylabel(y_col)
+    plt.grid(True)
+    plt.show()
+else:
+    print("Not enough numeric columns to visualize.")
+
+# --- Step 6: Train a simple ML model ---
+if len(numeric_cols) > 1:
+    target = numeric_cols[-1]
+    features = [col for col in numeric_cols[:-1]]
+    X = df_jan2025[features]
+    y = df_jan2025[target]
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    score = model.score(X_test, y_test)
+
+    print(f"\nModel trained to predict '{target}' for January 2025")
+    print("Accuracy (R² score):", score)
+
+    y_pred = model.predict(X_test)
+    plt.figure(figsize=(8,6))
+    plt.scatter(y_test, y_pred, color="green", alpha=0.7)
+    plt.xlabel("Actual")
+    plt.ylabel("Predicted")
+    plt.title(f"Prediction Performance for {target} (Jan 2025)")
+    plt.grid(True)
+    plt.show()
+else:
+    print("Not enough numeric columns to train a model.")

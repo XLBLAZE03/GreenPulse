@@ -8,12 +8,12 @@ from sklearn.linear_model import LinearRegression
 
 # --- Step 2: Load csv data ---
 # Replace 'data .csv' with the path to your csv file
-df = pd.read_csv("C:\\lifepulse\\GreenPulse.csv")
+df = pd.read_csv(("C:\lifepulse\GreenPulse\IṁṇṇNEOS_Daily_CO2_Dataset_2010_2024.csv"))
 
 print("Preview of data:")
 print(df.head())
 
-# --- Step 3: Preprocess data ---
+# --- Step 3: Preprocess data --
 # Drop rows with missing values
 df = df.dropna()
 
